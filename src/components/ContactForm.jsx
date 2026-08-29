@@ -14,8 +14,8 @@ export default function ContactForm() {
   const [errorMessage, setErrorMessage] = useState('');
   const [copiedField, setCopiedField] = useState(null);
 
-  // Web3Forms Access Key
-  const ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || '33ad0c89-926e-4e78-8895-a6129b8013e5';
+  // Web3Forms Verified Access Key
+  const ACCESS_KEY = '33ad0c89-926e-4e78-8895-a6129b8013e5';
 
   const validate = () => {
     const errors = {};
@@ -28,8 +28,8 @@ export default function ContactForm() {
     if (!formData.subject.trim()) errors.subject = 'Subject is required';
     if (!formData.message.trim()) {
       errors.message = 'Message is required';
-    } else if (formData.message.trim().length < 10) {
-      errors.message = 'Message must be at least 10 characters';
+    } else if (formData.message.trim().length < 5) {
+      errors.message = 'Message must be at least 5 characters';
     }
     return errors;
   };
@@ -54,38 +54,30 @@ export default function ContactForm() {
       setIsSubmitting(true);
 
       try {
+        const payload = new FormData();
+        payload.append('access_key', ACCESS_KEY);
+        payload.append('name', formData.name.trim());
+        payload.append('email', formData.email.trim());
+        payload.append('subject', `[Portfolio Message] ${formData.subject.trim()}`);
+        payload.append('message', formData.message.trim());
+        payload.append('from_name', `${formData.name.trim()} (Portfolio)`);
+
         const response = await fetch('https://api.web3forms.com/submit', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-          body: JSON.stringify({
-            access_key: ACCESS_KEY,
-            name: formData.name,
-            email: formData.email,
-            subject: `[Portfolio Inquiry] ${formData.subject}`,
-            message: formData.message,
-            from_name: `${formData.name} (via Portfolio)`,
-          }),
+          body: payload,
         });
 
-        const result = await response.json();
+        const data = await response.json();
 
-        if (result.success) {
+        if (data.success) {
           setSubmitted(true);
           setFormData({ name: '', email: '', subject: '', message: '' });
           setTouched({});
         } else {
-          // If access key is placeholder or invalid, notify clearly
-          if (ACCESS_KEY === 'YOUR_ACCESS_KEY_HERE') {
-            setErrorMessage('Please add your free Web3Forms Access Key in ContactForm.jsx or .env to receive emails directly into your inbox.');
-          } else {
-            setErrorMessage(result.message || 'Failed to send message. Please try again.');
-          }
+          setErrorMessage(data.message || 'Could not send message. Please try again.');
         }
       } catch {
-        setErrorMessage('Network error occurred. Please check your connection and try again.');
+        setErrorMessage('Unable to connect to email service. Please check your internet connection or email directly at prafulnimje1999@gmail.com.');
       } finally {
         setIsSubmitting(false);
       }
@@ -178,16 +170,18 @@ export default function ContactForm() {
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
               </div>
-              <h3>Message Sent Successfully!</h3>
-              <p style={{ maxWidth: '420px', margin: '0 auto 1.5rem', lineHeight: '1.6' }}>
-                Your message has been sent directly to <strong>prafulnimje1999@gmail.com</strong>. I'll get back to you shortly!
+              <h3 style={{ fontSize: '1.6rem', fontWeight: '800', color: 'var(--text)', marginBottom: '0.5rem' }}>
+                Message Sent Successfully!
+              </h3>
+              <p style={{ maxWidth: '440px', margin: '0 auto 1.5rem', lineHeight: '1.6', color: 'var(--accent)' }}>
+                Thank you! Your message has been sent directly to <strong>prafulnimje1999@gmail.com</strong>. I'll get back to you shortly.
               </p>
 
               <button
                 type="button"
                 className="cta-btn primary"
                 onClick={() => setSubmitted(false)}
-                style={{ fontSize: '0.9rem', padding: '0.75rem 1.5rem' }}
+                style={{ fontSize: '0.9rem', padding: '0.75rem 1.75rem' }}
               >
                 Send Another Message
               </button>

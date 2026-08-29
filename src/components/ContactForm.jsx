@@ -14,8 +14,8 @@ export default function ContactForm() {
   const [errorMessage, setErrorMessage] = useState('');
   const [copiedField, setCopiedField] = useState(null);
 
-  // Web3Forms Access Key (Can be set via .env as VITE_WEB3FORMS_ACCESS_KEY or updated directly)
-  const ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || 'YOUR_ACCESS_KEY_HERE';
+  // Web3Forms Access Key
+  const ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || '33ad0c89-926e-4e78-8895-a6129b8013e5';
 
   const validate = () => {
     const errors = {};

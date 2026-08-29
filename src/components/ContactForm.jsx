@@ -1,86 +1,37 @@
 import { useState } from 'react';
 
 export default function ContactForm() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: '',
-  });
-
-  const [touched, setTouched] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [copiedField, setCopiedField] = useState(null);
 
-  // Web3Forms Verified Access Key
-  const ACCESS_KEY = '33ad0c89-926e-4e78-8895-a6129b8013e5';
-
-  const validate = () => {
-    const errors = {};
-    if (!formData.name.trim()) errors.name = 'Name is required';
-    if (!formData.email.trim()) {
-      errors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errors.email = 'Please enter a valid email address';
-    }
-    if (!formData.subject.trim()) errors.subject = 'Subject is required';
-    if (!formData.message.trim()) {
-      errors.message = 'Message is required';
-    } else if (formData.message.trim().length < 5) {
-      errors.message = 'Message must be at least 5 characters';
-    }
-    return errors;
-  };
-
-  const errors = validate();
-
-  const handleBlur = (field) => {
-    setTouched((prev) => ({ ...prev, [field]: true }));
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setTouched({ name: true, email: true, subject: true, message: true });
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setIsSubmitting(true);
     setErrorMessage('');
 
-    if (Object.keys(errors).length === 0) {
-      setIsSubmitting(true);
+    const formData = new FormData(event.target);
+    formData.append('access_key', '33ad0c89-926e-4e78-8895-a6129b8013e5');
 
-      try {
-        const payload = new FormData();
-        payload.append('access_key', ACCESS_KEY);
-        payload.append('name', formData.name.trim());
-        payload.append('email', formData.email.trim());
-        payload.append('subject', `[Portfolio Message] ${formData.subject.trim()}`);
-        payload.append('message', formData.message.trim());
-        payload.append('from_name', `${formData.name.trim()} (Portfolio)`);
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: formData,
+      });
 
-        const response = await fetch('https://api.web3forms.com/submit', {
-          method: 'POST',
-          body: payload,
-        });
+      const data = await response.json();
 
-        const data = await response.json();
-
-        if (data.success) {
-          setSubmitted(true);
-          setFormData({ name: '', email: '', subject: '', message: '' });
-          setTouched({});
-        } else {
-          setErrorMessage(data.message || 'Could not send message. Please try again.');
-        }
-      } catch {
-        setErrorMessage('Unable to connect to email service. Please check your internet connection or email directly at prafulnimje1999@gmail.com.');
-      } finally {
-        setIsSubmitting(false);
+      if (data.success) {
+        setSubmitted(true);
+        event.target.reset();
+      } else {
+        setErrorMessage(data.message || 'Could not send message. Please try again.');
       }
+    } catch {
+      setErrorMessage('Network error occurred. Please check your connection and try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -187,7 +138,7 @@ export default function ContactForm() {
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} noValidate className="contact-form">
+            <form onSubmit={handleSubmit} className="contact-form">
               {errorMessage && (
                 <div style={{ padding: '0.85rem 1rem', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid #ef4444', borderRadius: '10px', color: '#ef4444', fontSize: '0.85rem', lineHeight: '1.5' }}>
                   {errorMessage}
@@ -203,12 +154,8 @@ export default function ContactForm() {
                   id="name"
                   name="name"
                   placeholder="e.g. John Doe"
-                  value={formData.name}
-                  onChange={handleChange}
-                  onBlur={() => handleBlur('name')}
-                  className={touched.name && errors.name ? 'input-error' : ''}
+                  required
                 />
-                {touched.name && errors.name && <span className="field-error-msg">{errors.name}</span>}
               </div>
 
               <div className="form-group">
@@ -220,12 +167,8 @@ export default function ContactForm() {
                   id="email"
                   name="email"
                   placeholder="john@example.com"
-                  value={formData.email}
-                  onChange={handleChange}
-                  onBlur={() => handleBlur('email')}
-                  className={touched.email && errors.email ? 'input-error' : ''}
+                  required
                 />
-                {touched.email && errors.email && <span className="field-error-msg">{errors.email}</span>}
               </div>
 
               <div className="form-group">
@@ -237,37 +180,26 @@ export default function ContactForm() {
                   id="subject"
                   name="subject"
                   placeholder="Project inquiry / Job opportunity"
-                  value={formData.subject}
-                  onChange={handleChange}
-                  onBlur={() => handleBlur('subject')}
-                  className={touched.subject && errors.subject ? 'input-error' : ''}
+                  required
                 />
-                {touched.subject && errors.subject && <span className="field-error-msg">{errors.subject}</span>}
               </div>
 
               <div className="form-group">
-                <div className="label-with-counter">
-                  <label htmlFor="message">
-                    Message <span className="req">*</span>
-                  </label>
-                  <span className="char-count">{formData.message.length} chars</span>
-                </div>
+                <label htmlFor="message">
+                  Message <span className="req">*</span>
+                </label>
                 <textarea
                   id="message"
                   name="message"
                   rows="4"
                   placeholder="Hello Prafull, I'd like to discuss..."
-                  value={formData.message}
-                  onChange={handleChange}
-                  onBlur={() => handleBlur('message')}
-                  className={touched.message && errors.message ? 'input-error' : ''}
+                  required
                 ></textarea>
-                {touched.message && errors.message && <span className="field-error-msg">{errors.message}</span>}
               </div>
 
               <button type="submit" className="submit-btn" disabled={isSubmitting}>
                 {isSubmitting ? (
-                  <span>Sending Message Directly...</span>
+                  <span>Sending Message...</span>
                 ) : (
                   <>
                     <span>Send Message</span>

@@ -1,87 +1,223 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import clinicalTaskManagerImg from '../assets/projects/clinical_task_manager.jpg';
 import clinicalTaskPatientChartImg from '../assets/projects/clinical_task_patient_chart.jpg';
-import courseManagementImg from '../assets/projects/course_management_portal.jpg';
-import courseStudentMarksImg from '../assets/projects/course_student_marks.jpg';
+import stcAdminPanelImg from '../assets/projects/STC_AdminPanel.png';
+import stcUserPanelImg from '../assets/projects/STC_UserPanel.png';
+import stcAttendanceManagementImg from '../assets/projects/STC_AttendanceManagement.png';
+import stcGeotaggingImg from '../assets/projects/STC_Geotagging.png';
+import stcTestScoresImg from '../assets/projects/STC_TestScores.png';
+import stcCertGenerationImg from '../assets/projects/STC_CertGeneration.png';
+import stcBatchReportImg from '../assets/projects/STC_BatchReport.png';
+import stcInvoiceImg from '../assets/projects/STC_Invoice.png';
 import rtmssuManagementImg from '../assets/projects/rtmssu_management_portal.jpg';
 import rtmssuGrievanceWorkflowImg from '../assets/projects/rtmssu_grievance_workflow.jpg';
 
 function ProjectImageCarousel({ images, projectTitle }) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+
+  // Reset index when project changes
+  useEffect(() => {
+    setCurrentIndex(0);
+    setIsLightboxOpen(false);
+  }, [projectTitle]);
+
+  // Keyboard navigation for lightbox
+  useEffect(() => {
+    if (!isLightboxOpen) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setIsLightboxOpen(false);
+      } else if (e.key === 'ArrowLeft') {
+        setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+      } else if (e.key === 'ArrowRight') {
+        setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isLightboxOpen, images.length]);
 
   if (!images || images.length === 0) return null;
 
   const handlePrev = (e) => {
-    e.stopPropagation();
+    e?.stopPropagation();
     setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
 
   const handleNext = (e) => {
-    e.stopPropagation();
+    e?.stopPropagation();
     setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
   return (
-    <div className="project-carousel-container">
-      <div className="carousel-slide-wrapper">
-        <img
-          src={images[currentIndex].src}
-          alt={`${projectTitle} - ${images[currentIndex].label}`}
-          className="carousel-main-image"
-        />
+    <>
+      <div className="project-carousel-container">
+        <div
+          className="carousel-slide-wrapper"
+          onClick={() => setIsLightboxOpen(true)}
+          title="Click to view full size screenshot"
+        >
+          <img
+            src={images[currentIndex].src}
+            alt={`${projectTitle} - ${images[currentIndex].label}`}
+            className="carousel-main-image"
+          />
+
+          <div className="carousel-zoom-hint">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              <line x1="11" y1="8" x2="11" y2="14" />
+              <line x1="8" y1="11" x2="14" y2="11" />
+            </svg>
+            <span>Click to expand</span>
+          </div>
+
+          {images.length > 1 && (
+            <>
+              <button
+                type="button"
+                className="carousel-nav-btn prev"
+                onClick={handlePrev}
+                aria-label="Previous image"
+                title="Previous Screenshot"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
+              </button>
+
+              <button
+                type="button"
+                className="carousel-nav-btn next"
+                onClick={handleNext}
+                aria-label="Next image"
+                title="Next Screenshot"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </button>
+
+              <div className="carousel-badge">
+                <span className="carousel-label">{images[currentIndex].label}</span>
+                <span className="carousel-counter">
+                  {currentIndex + 1} / {images.length}
+                </span>
+              </div>
+            </>
+          )}
+        </div>
 
         {images.length > 1 && (
-          <>
-            <button
-              type="button"
-              className="carousel-nav-btn prev"
-              onClick={handlePrev}
-              aria-label="Previous image"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <polyline points="15 18 9 12 15 6" />
-              </svg>
-            </button>
-
-            <button
-              type="button"
-              className="carousel-nav-btn next"
-              onClick={handleNext}
-              aria-label="Next image"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <polyline points="9 18 15 12 9 6" />
-              </svg>
-            </button>
-
-            <div className="carousel-badge">
-              <span className="carousel-label">{images[currentIndex].label}</span>
-              <span className="carousel-counter">
-                {currentIndex + 1} / {images.length}
-              </span>
-            </div>
-          </>
+          <div className="carousel-indicators">
+            {images.map((img, idx) => (
+              <button
+                key={idx}
+                type="button"
+                className={`carousel-dot ${idx === currentIndex ? 'active' : ''}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCurrentIndex(idx);
+                }}
+                aria-label={`Go to slide ${idx + 1}: ${img.label}`}
+                title={`${idx + 1}. ${img.label}`}
+              />
+            ))}
+          </div>
         )}
       </div>
 
-      {images.length > 1 && (
-        <div className="carousel-indicators">
-          {images.map((img, idx) => (
+      {/* Fullscreen Lightbox Modal */}
+      {isLightboxOpen && (
+        <div
+          className="image-lightbox-overlay"
+          onClick={() => setIsLightboxOpen(false)}
+        >
+          <div
+            className="image-lightbox-content"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
-              key={idx}
               type="button"
-              className={`carousel-dot ${idx === currentIndex ? 'active' : ''}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                setCurrentIndex(idx);
-              }}
-              aria-label={`Go to slide ${idx + 1}`}
-              title={img.label}
+              className="lightbox-close-btn"
+              onClick={() => setIsLightboxOpen(false)}
+              aria-label="Close fullscreen view"
+              title="Close (Esc)"
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+
+            <img
+              src={images[currentIndex].src}
+              alt={`${projectTitle} - ${images[currentIndex].label}`}
+              className="lightbox-image"
             />
-          ))}
+
+            {images.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  className="lightbox-nav-btn prev"
+                  onClick={handlePrev}
+                  aria-label="Previous image"
+                  title="Previous (Left Arrow)"
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <polyline points="15 18 9 12 15 6" />
+                  </svg>
+                </button>
+
+                <button
+                  type="button"
+                  className="lightbox-nav-btn next"
+                  onClick={handleNext}
+                  aria-label="Next image"
+                  title="Next (Right Arrow)"
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </button>
+              </>
+            )}
+
+            <div className="lightbox-footer">
+              <div className="lightbox-info">
+                <span className="lightbox-title">{projectTitle}</span>
+                <span className="lightbox-divider">•</span>
+                <span className="lightbox-label">{images[currentIndex].label}</span>
+              </div>
+              <div className="lightbox-actions">
+                <span className="lightbox-counter">
+                  {currentIndex + 1} / {images.length}
+                </span>
+                <a
+                  href={images[currentIndex].src}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="lightbox-open-raw-btn"
+                  title="Open original image in new tab"
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                    <polyline points="15 3 21 3 21 9" />
+                    <line x1="10" y1="14" x2="21" y2="3" />
+                  </svg>
+                  <span>Open Full Size</span>
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
 
@@ -116,10 +252,16 @@ export default function ProjectsShowcase() {
     },
     {
       title: 'Short Term Course Management Portal',
-      coverImage: courseManagementImg,
+      coverImage: stcAdminPanelImg,
       images: [
-        { src: courseManagementImg, label: 'Course Management & Geotagged Attendance' },
-        { src: courseStudentMarksImg, label: 'Gradebook & Batch Performance Analytics' },
+        { src: stcAdminPanelImg, label: 'Admin Dashboard & Batch Oversight' },
+        { src: stcUserPanelImg, label: 'User & Faculty Management Panel' },
+        { src: stcAttendanceManagementImg, label: 'Attendance Management & Records' },
+        { src: stcGeotaggingImg, label: 'Geotagged Photo Attendance Verification' },
+        { src: stcTestScoresImg, label: 'Test Scores & Marks Evaluation' },
+        { src: stcCertGenerationImg, label: 'Automated Certificate Generation & Issuance' },
+        { src: stcBatchReportImg, label: 'Batch Performance & Completion Report' },
+        { src: stcInvoiceImg, label: 'Billing & Invoice Generation' },
       ],
       shortDesc: 'Multi-role batch and student management portal (100+ users) with geotagged photo attendance and automated certification.',
       features: [

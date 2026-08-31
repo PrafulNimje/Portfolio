@@ -13,6 +13,7 @@ export default function ContactForm() {
 
     const formData = new FormData(event.target);
     formData.append("access_key", "33ad0c89-926e-4e78-8895-a6129b8013e5");
+    formData.append("from_name", "Portfolio Contact Form");
 
     try {
       const response = await fetch("https://api.web3forms.com/submit", {
@@ -194,6 +195,7 @@ export default function ContactForm() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="contact-form">
+              <input type="checkbox" name="botcheck" style={{ display: 'none' }} />
               {errorMessage && (
                 <div
                   style={{

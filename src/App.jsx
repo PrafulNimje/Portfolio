@@ -254,7 +254,7 @@ function App() {
         <div className="about-card">
           <div className="about-card-inner">
             <p>
-              Results-driven <strong>.NET Developer</strong> with 1 year of
+              Results-driven <strong>.NET Developer</strong> with a year of
               experience in <strong>C#</strong>, <strong>ASP.NET Core</strong>,
               and <strong>SQL Server</strong>, delivering production systems for{" "}
               <strong>5,000+ users</strong>. Skilled in requirements gathering,
@@ -452,7 +452,7 @@ function App() {
               <div className="resume-section-preview">
                 <h4>Professional Summary</h4>
                 <p>
-                  Results-driven .NET Developer with 1 year of experience in C#,
+                  Results-driven .NET Developer with a year of experience in C#,
                   ASP.NET Core, and SQL Server, delivering production systems
                   for 5,000+ users. Skilled in requirements gathering, solution
                   configuration, debugging, and reverse engineering. Experienced

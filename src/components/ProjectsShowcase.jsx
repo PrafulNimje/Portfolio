@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import clinicalTaskManagerImg from '../assets/projects/clinical_task_manager.jpg';
+import courseManagementImg from '../assets/projects/course_management_portal.jpg';
+import rtmssuManagementImg from '../assets/projects/rtmssu_management_portal.jpg';
 
 export default function ProjectsShowcase() {
   const [selectedProject, setSelectedProject] = useState(null);
@@ -6,6 +9,7 @@ export default function ProjectsShowcase() {
   const projects = [
     {
       title: 'Clinical Task Manager',
+      image: clinicalTaskManagerImg,
       shortDesc: 'Full-stack clinical task management platform (Admin/Staff roles) with Angular 16+, NgRx, and containerized ASP.NET Core Web API.',
       features: [
         'Built a full-stack clinical task management app (Admin/Staff roles) using Angular 16+, NgRx (@ngrx/store, @ngrx/effects), reactive forms, PrimeNG components, and JWT-protected route guards.',
@@ -23,10 +27,10 @@ export default function ProjectsShowcase() {
         'Azure',
         'GitHub Actions',
       ],
-      githubLink: 'https://github.com/PrafulNimje',
     },
     {
       title: 'Short Term Course Management Portal',
+      image: courseManagementImg,
       shortDesc: 'Multi-role batch and student management portal (100+ users) with geotagged photo attendance and automated certification.',
       features: [
         'Built a multi-role batch and student management portal (100+ users) with course creation, student enrollment, and geotagged photo-based attendance tracking maintaining 500+ verified session records.',
@@ -35,10 +39,10 @@ export default function ProjectsShowcase() {
         'Built responsive Bootstrap UI and admin panel for batch oversight; communicated technical solutions to non-technical administrators and facilitated end-user training for smooth platform adoption.',
       ],
       tags: ['C#', 'ASP.NET', 'SQL Server', 'ADO.NET', 'Bootstrap'],
-      githubLink: 'https://github.com/PrafulNimje',
     },
     {
       title: 'RTMSSU Management Portal',
+      image: rtmssuManagementImg,
       shortDesc: 'Multi-module student management portal for 300+ end-users covering admissions, grievance routing, and automated RDLC reports.',
       features: [
         'Architected a multi-module student management portal for 300+ end-users covering admissions (200+ students), grievance routing (150+ requests), and certificate document generation (500+ documents) with role-based access control.',
@@ -46,7 +50,6 @@ export default function ProjectsShowcase() {
         'Delivered full technical documentation, data mapping sheets, and user training materials; conducted UAT walkthroughs and resolved post-launch defects ensuring stable adoption across all user roles.',
       ],
       tags: ['C#', 'ASP.NET Core MVC', 'ADO.NET', 'SQL Server', 'RDLC', 'HTML', 'JavaScript'],
-      githubLink: 'https://github.com/PrafulNimje',
     },
   ];
 
@@ -56,6 +59,18 @@ export default function ProjectsShowcase() {
       <div className="projects-grid">
         {projects.map((project) => (
           <div key={project.title} className="project-card">
+            <div
+              className="project-card-image-wrap"
+              onClick={() => setSelectedProject(project)}
+              title="Click to view project details & preview"
+            >
+              <img
+                src={project.image}
+                alt={project.title}
+                className="project-card-image"
+                loading="lazy"
+              />
+            </div>
             <div className="project-content">
               <h3 className="project-title">{project.title}</h3>
               <p className="project-desc">{project.shortDesc}</p>
@@ -113,7 +128,16 @@ export default function ProjectsShowcase() {
             </div>
 
             <div className="modal-body">
-              <h3 className="modal-section-title">Key Contributions & Features</h3>
+              <div className="modal-image-preview">
+                <img
+                  src={selectedProject.image}
+                  alt={`${selectedProject.title} preview`}
+                />
+              </div>
+
+              <h3 className="modal-section-title" style={{ marginTop: '1.75rem' }}>
+                Key Contributions & Features
+              </h3>
               <ul className="modal-features">
                 {selectedProject.features.map((feature, i) => (
                   <li key={i}>{feature}</li>
@@ -122,17 +146,13 @@ export default function ProjectsShowcase() {
             </div>
 
             <div className="modal-footer">
-              <a
-                href={selectedProject.githubLink}
-                className="modal-cta primary"
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                type="button"
+                className="modal-cta secondary"
+                onClick={() => setSelectedProject(null)}
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" />
-                </svg>
-                <span>View on GitHub</span>
-              </a>
+                Close
+              </button>
             </div>
           </div>
         </div>
